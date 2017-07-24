@@ -53,5 +53,32 @@ class CoreDataStack {
 
 extension CoreDataStack {
     
+    func getAllDataFromDB() {
+        var array = [Mitre]()
+        let context = self.persistentContainer.viewContext
+        let request: NSFetchRequest<Mitre> = Mitre.fetchRequest()
+        
+        do {
+            array = try context.fetch(request)
+            if array.isEmpty {
+                print("данных нет!")
+            } else {
+                print("в кордате аж \(array.count) записей!!!")
+            }
+        } catch let error as NSError {
+            print(error.userInfo)
+        }
+    }
     
+    func deleteAllInstancesOf(entity: String, context: NSManagedObjectContext) {
+        let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
+        
+        do {
+            try context.execute(deleteRequest)
+            try context.save()
+        } catch {
+            print("There was an error")
+        }
+    }
 }
