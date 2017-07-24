@@ -12,22 +12,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     @IBOutlet var tableView: UITableView!
     
+    var spinner: UIActivityIndicatorView!
+    
     var array = [Mitre]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // спиннер предзагрузки данных в таблицу
+        spinner = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        spinner.color = UIColor.gray
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.hidesWhenStopped = true
+        spinner.startAnimating()
+        tableView.addSubview(spinner)
+        spinner.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
+        spinner.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
+        
+        // потянули-обновили
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl?.backgroundColor = .white
+        tableView.refreshControl?.tintColor = .gray
+        tableView.refreshControl?.addTarget(self, action: #selector(loadData), for: .valueChanged)
+        
+        
         tableView.delegate = self
         tableView.dataSource = self
         
-        CoreDataStack.instance.getAllDataFromDB()
-        PersistentService.getMitres { (mitres: [Mitre]) -> () in
-            self.array = mitres
-            print("Loaded!")
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
+        loadData()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -47,5 +59,25 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             return UITableViewCell()
         }
     }
+    
+    func loadData() {
+        PersistentService.getMitres() { (mitres: [Mitre]) -> () in
+            self.array = mitres
+            self.array = self.array.sorted(by: {$0.id < $1.id})
+            print("Loaded!\nThere are \(self.array.count) cells in table view")
+            DispatchQueue.main.async {
+                self.spinner.stopAnimating()
+                self.tableView.refreshControl?.endRefreshing()
+                self.tableView.reloadData()
+            }
+        }
+    }
 }
+
+/*extension UITableView {
+    func scrollToBottom(animated: Bool) {
+        let y = contentSize.height - frame.size.height
+        setContentOffset(CGPoint(x: 0, y: (y<0) ? 0 : y), animated: animated)
+    }
+}*/
 

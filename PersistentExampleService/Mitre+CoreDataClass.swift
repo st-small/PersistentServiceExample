@@ -20,7 +20,7 @@ public class Mitre: NSManagedObject {
         do {
             let mitres = try context.fetch(request)
             for mitre in mitres {
-                print(mitre.title ?? "no name")
+                //print(mitre.title ?? "no name")
             }
             return !(mitres.isEmpty)
         } catch {

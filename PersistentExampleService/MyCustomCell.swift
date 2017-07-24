@@ -10,9 +10,9 @@ import UIKit
 
 class MyCustomCell: UITableViewCell {
     
-    @IBOutlet var img: UIImageView!
-    @IBOutlet var titleCell: UILabel!
-    @IBOutlet var idCell: UILabel!
+    @IBOutlet weak var img: UIImageView!
+    @IBOutlet weak var titleCell: UILabel!
+    @IBOutlet weak var idCell: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
