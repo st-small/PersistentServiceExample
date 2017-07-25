@@ -20,6 +20,9 @@ class PersistentService {
         if !mitres.isEmpty {
             print("There are \(mitres.count) mitres in DB")
             callback(mitres)
+            getListOfItems(callback: { (mitres: [Mitre]) -> () in
+                
+            })
         } else {
             getListOfItems(callback: { (mitres: [Mitre]) -> () in
                 callback(mitres)
@@ -77,11 +80,10 @@ class PersistentService {
                                 
                                 for value in json {
                                     
-                                    let mitre = Mitre(context: moc)
-                                    
                                     if let id = value["id"] as? Int {
                                         //print(id)
                                         if !Mitre.isInDBBy(ID: id) {
+                                            let mitre = Mitre(context: moc)
                                             mitre.id = Int16(id)
                                             
                                             if let titleDict = value["title"] as? Dictionary<String, String> {

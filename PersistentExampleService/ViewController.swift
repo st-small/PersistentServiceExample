@@ -62,6 +62,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func loadData() {
         PersistentService.getMitres() { (mitres: [Mitre]) -> () in
+            self.spinner.startAnimating()
             for m in mitres {
                 self.array.insert(m)
             }
