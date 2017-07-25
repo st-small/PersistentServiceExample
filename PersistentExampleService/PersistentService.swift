@@ -10,8 +10,7 @@ import Foundation
 import CoreData
 
 let B_URL = "http://zolotoe-shitvo.kr.ua/wp-json/wp/v2/posts?categories=6"//&per_page=100"
-var mitresPostsCount = 0
-var array = [Mitre]()
+var pCount = 0
 
 class PersistentService {
     
@@ -22,7 +21,7 @@ class PersistentService {
             print("There are \(mitres.count) mitres in DB")
             callback(mitres)
         } else {
-            getListOfItems(callback: { 
+            getListOfItems(callback: { (mitres: [Mitre]) -> () in
                 callback(mitres)
             })
         }
@@ -43,7 +42,7 @@ class PersistentService {
                 
                 if let postsCount = response.allHeaderFields["X-WP-Total"] as? String {
                     //print(postsCount)
-                    mitresPostsCount = Int(postsCount)!
+                    pCount = Int(postsCount)!
                 }
             }
             if error != nil {
@@ -59,8 +58,8 @@ class PersistentService {
         let session = URLSession(configuration: config) // Load configuration into Session
         
         getPostsCount {
-            
-            for i in stride(from: 0, through: mitresPostsCount, by: 10) {
+            // После получения количества записей, проходим в цикле, берем выдачу в 10 элементов и делаем в цикле количество проходов для выборки всех элементов в данной категории
+            for i in stride(from: 0, through: pCount, by: 10) {
                 print("i = \(i)")
                 let url = URL(string: "\(B_URL)"+"&offset=\(i)")!
                 let task = session.dataTask(with: url, completionHandler: {

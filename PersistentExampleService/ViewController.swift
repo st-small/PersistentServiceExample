@@ -13,8 +13,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var tableView: UITableView!
     
     var spinner: UIActivityIndicatorView!
-    
-    var array = [Mitre]()
+    var array = Set<Mitre>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,7 +52,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? MyCustomCell {
-            cell.configureCell(mitre: array[indexPath.row])
+            let tempArr = Array(array)
+            cell.configureCell(mitre: tempArr[indexPath.row])
             return cell
         } else {
             return UITableViewCell()
@@ -62,8 +62,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func loadData() {
         PersistentService.getMitres() { (mitres: [Mitre]) -> () in
-            self.array = mitres
-            self.array = self.array.sorted(by: {$0.id < $1.id})
+            for m in mitres {
+                self.array.insert(m)
+            }
             print("Loaded!\nThere are \(self.array.count) cells in table view")
             DispatchQueue.main.async {
                 self.spinner.stopAnimating()
@@ -73,11 +74,4 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
 }
-
-/*extension UITableView {
-    func scrollToBottom(animated: Bool) {
-        let y = contentSize.height - frame.size.height
-        setContentOffset(CGPoint(x: 0, y: (y<0) ? 0 : y), animated: animated)
-    }
-}*/
 
